@@ -18,6 +18,7 @@
         changePropertyValueTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         saveMockApiValue()
         loadFirstValueFromDb()
+        deleteFirstValueFromdb()
     }
     
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -71,7 +72,21 @@
      func loadFirstValueFromDb() {
          dataStore = Backendless.shared.data.ofTable("Person")
          dataStore?.findFirst(responseHandler: { firstElement in
-             let age = firstElement["age"];
+             let name = firstElement["name"]
+             let age = firstElement["age"]
+         }, errorHandler: { fault in
+             self.showErrorAlert(fault)
+         })
+     }
+     
+     func deleteFirstValueFromdb() {
+         dataStore = Backendless.shared.data.ofTable("Person")
+         dataStore?.findFirst(responseHandler: { firstElement in
+             self.dataStore?.remove(entity: firstElement, responseHandler: { removeResponse in
+                 let x=2
+             }, errorHandler: { fault in
+                 self.showErrorAlert(fault)
+             })
          }, errorHandler: { fault in
              self.showErrorAlert(fault)
          })
