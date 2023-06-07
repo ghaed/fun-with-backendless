@@ -17,6 +17,7 @@
         super.viewDidLoad()
         changePropertyValueTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         saveMockApiValue()
+        loadFirstValueFromDb()
     }
     
     @objc func textFieldDidChange(_ textField: UITextField) {
@@ -54,7 +55,7 @@
                  
                  let whereClause = String(format: "objectId = '%@'", savedObjectId)
                  let _ = eventHandler?.addUpdateListener(whereClause: whereClause, responseHandler: { updatedTestObject in
-                     var stringValue = "\(updatedTestObject["age"]!)"
+                     let stringValue = "\(updatedTestObject["age"]!)"
                      if updatedTestObject["age"] != nil {
                          self.propertyLabel.text = stringValue
                      }
@@ -62,6 +63,15 @@
                      self.showErrorAlert(fault)
                  })
              }
+         }, errorHandler: { fault in
+             self.showErrorAlert(fault)
+         })
+     }
+     
+     func loadFirstValueFromDb() {
+         dataStore = Backendless.shared.data.ofTable("Person")
+         dataStore?.findFirst(responseHandler: { firstElement in
+             let age = firstElement["age"];
          }, errorHandler: { fault in
              self.showErrorAlert(fault)
          })
